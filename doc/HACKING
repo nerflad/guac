@@ -1,0 +1,10 @@
+GUAC*       path global
+__*         array global
+
+GUAC_*      function
+GUAC*__*     private function
+
+GUACMSG_*   message, might be filtered
+GUACFAIL_*  message, exit 255
+
+lowercase_  function too long to fit in alias (i.e subject to refactor)

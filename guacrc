@@ -1,0 +1,23 @@
+# vim: syntax=bash
+# 🥑
+# | guacrc ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#       GUAC__SUPPRESS:
+#        bash object containing function names.
+#        uncomment to suppress some or all output in that function.
+#
+#       GUAC_{UN}INSTALL   Uncomment for silent {un}installation
+#       GUAC_INSTALL_SMOL  Uncomment for less verbose installation
+#       GUAC_SUPPRESS      The message about suppressing messages
+#       GUAC_PATH          The message warning that the alias manager has not been enabled
+#       GUAC_NOREPO        Redundant (but cute!) message from guac if you are not in a repo
+
+# | ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |
+#
+GUAC__SUPPRESS=(
+#    "GUAC_INSTALL"
+    "GUAC_INSTALL_SMOL"
+    "GUAC_UNINSTALL"
+#   "GUACMSG_SUPPRESS"
+#   "GUACMSG_PATH"
+   "GUACMSG_NOREPO"
+);

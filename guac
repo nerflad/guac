@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# vim: foldmethod=indent :
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 🥑GUAC
+# © 2024 Eric Bailey - MIT
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# const
+declare -r GUACBIN=$(dirname "$0")
+export     GUACBIN
+
+declare -r GUACDIR="$(dirname "$(readlink -f "$0")")"
+export     GUACDIR
+
+declare -r GUACLIB="$GUACDIR/libguac.sh"
+export     GUACLIB
+
+declare -r GUACPRIV="$HOME"/.config/guac
+export     GUACPRIV
+
+declare -r GUACUSRBIN="$GUACPRIV"/usrbin
+export     GUACUSRBIN
+
+declare -r GUACUSRFUNC="$GUACPRIV"/usrfunc
+export     GUACUSRFUNC
+
+declare -r GUACRC="$GUACPRIV"/guacrc
+export     GUACRC
+
+# var
+declare -a GUAC__SUPPRESS
+export     GUAC__SUPPRESS
+
+declare    __SUPPRESS_NOTIFIED=""
+export     __SUPPRESS_NOTIFIED
+
+declare -A __USRFUNC
+export     __USRFUNC
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#include
+.       "$GUACDIR"/libguac.sh
+.       "$GUACRC" 2>/dev/null
+.       "$GUACDIR"/include/ansi.sh
+ANSI_FORCE_SUPPORT=1
+GUAC_INITDIRS
+GUACMSG_PATH
+GUAC_INITUSRFUNCS;
+for file in "${!__USRFUNC[@]}"; do
+  #include
+  .       "$file"
+done
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#  main
+# options are passed to git, unless guac is called by name [guac/,]
+# shellcheck disable=SC2046
+if [ $(basename "$0") == "," ] || [ $(basename "$0") == "guac" ]; then
+  while getopts "behilu" opt; do
+    case "$opt" in
+      b ) GUAC_BIND "$@"; exit 0;;
+      e ) shift; GUAC_EDITUSRFUNC "$1"; exit 0;;
+      h ) GUACMSG_HELP; exit 0;;
+      i ) shift; GUAC_INSTALL "$1"; exit 0;;
+      l ) GUAC_LISTUSRFUNCS; exit 0;;
+      u ) GUAC_UNINSTALL; exit 0;;
+      * ) shift; continue;;
+     esac
+   done
+fi
+# fall through to show both guac and git's help
+[ "$1" == "help" ] && GUACMSG_HELP;
+
+# avoid infinite loop by making sure a function exists
+# matching the name of calling symlink.
+# shellcheck disable=SC2046
+declare -F | awk '{print $3}' | grep -q $(basename "$0") || GUACFAIL_FUNC "$0"
+
+if ! GUAC_REPOCHECK; then GUACMSG_NOREPO; fi
+($(basename "$0") "$@")
