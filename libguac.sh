@@ -166,10 +166,11 @@ function GUAC_INITDIRS () {
 }
 
 function GUAC_INSTALL () {
-    [ -d "$1" ] || (
-        echo 🥑 Please specify a valid directory.
+    if ! [ -d "$1" ]; then
+        ansi --red "$1"
+        ansi --faint 🥑 Please specify a valid directory.
         exit 1
-    );
+    fi
     guaclinks="$1"
     for symlink in $(compgen -A function | grep -e ','); do
         ln -s "${GUACDIR:?}/guac" "$guaclinks"/"$symlink" && (
@@ -247,6 +248,9 @@ function GUAC_UNINSTALL () {
         y|Y ) echo rm "${GUACRC}";;
         *   ) ;;
     esac
+    if [ -z "$(find $GUACBIN -type f)" ]; then
+        rmdir $GUACBIN
+    fi
 }
 
 function GUAC_REPOCHECK () {
