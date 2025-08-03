@@ -14,15 +14,16 @@ function GUACMSG_BRACE () {
 
 function GUACMSG_HELP () {
 cat << EOF
-     $(ansi --green "🥑      git under a comma")
+     $(echo -n "🥑      ")$(ansi --color=6 --bold "git under a comma")
      $(GUACMSG_BRACE open)
-     $(ansi --bold  ", -b    bind alias e.g:  , -b \",ls\" \"git status\"")
-     $(ansi --bold  ", -e    edit source")
-     $(ansi --bold ", -h    display help")
-     $(ansi --bold ", -i    install (dump symlinks to specified dir)")
-     $(ansi --bold  ", -l    show aliases")
-     $(ansi --bold ", -u    uninstall")
-     $(ansi --bold  ",       git \$argv || git status")
+     $(ansi -n --bold --color=2 ", -b")$(ansi --bold "    bind alias")$(ansi -n --faint " e.g: , -b \",ls\" \"git status\"")
+     $(ansi -n --bold --color=2 ", -e")$(ansi --bold "    edit alias")$(ansi -n --faint " e.g: , -e \",ls\"")$(ansi --faint " [no arg: edit guac's source]")
+     $(ansi -n --bold --color=2 ", -h")$(ansi --bold "    display help")
+     $(ansi -n --bold --color=2 ", -i")$(ansi --bold "    install (dump symlinks to specified dir)")
+     $(ansi -n --bold --color=2 ", -l")$(ansi --bold "    show aliases")
+     $(ansi -n --bold --color=2 ", -u")$(ansi --bold "    uninstall")
+     $(ansi -n --bold --color=2 ",   ")$(ansi --bold "    git \$argv || git status")
+     $(ansi -n --bold --color=2 ",,, ")$(ansi --faint "    print LONGHELP")
      $(GUACMSG_BRACE close)
 EOF
 }
@@ -35,7 +36,7 @@ function GUACMSG__LONGHELP_FORMAT () { local line=$1
     local col2=$(cut -d' ' -f2- < <(echo "$line"))
 
     for i in $(seq $padding); do printf ' '; done
-    ansi -n --green  "$col1"
+    ansi -n --bold --green  "$col1"
     for i in $(seq $formatwidth); do printf ' '; done
     ansi --faint     "$col2"
 }
@@ -51,6 +52,7 @@ function GUACMSG_LONGHELP () {
         s/; }//g
         s/ \"\$\@\"//g
         /^#/d
+        s/ #/  /g
 EOF
     );
     # print aliases if there are any (guac -l)
@@ -194,13 +196,13 @@ function GUAC_LISTUSRFUNCS () {
     if [ $(("${#__USRFUNC[@]}")) = 0 ]; then
         return
     else
-        ansi --faint --blue "Found guac usrfuncs:"
+        ansi --faint --cyan " Found guac usrfuncs:"
     fi
     for func in "${!__USRFUNC[@]}"; do
         ansi -n --faint "$(dirname $func)"/
         ansi --green "$(basename $func)"
     done
-    ansi --faint --blue "🥑 drop them in ${EDITOR} with \`, -e \$FUNCNAME\`"
+    ansi --faint --cyan "🥑Drop them in ${EDITOR} with \`, -e \$FUNCNAME\`"
 }
 
 function GUAC_INITUSRFUNCS () {
@@ -292,11 +294,12 @@ function ,      () {
 function guac   () { , "$@"; }
 
 
+function ,,,    () {    GUACMSG_LONGHELP; exit 0; }
 # ~ user interface ~~~~~~~~~~~~~~~~~~~~~~~
 # everything below this line is also the input for GUACMSG_LONGHELP
 ################################################################################
 function ,,     () {    git status "$@"; }
-function ,,,    () {    GUACMSG_LONGHELP; exit 0; }
+ #function ,      () {    git "$@"; }
 
 function ,a     () {    git add "$@"; }
 function ,a.    () {    ,a . ; }
